@@ -17,6 +17,8 @@ class UserBase(BaseModel):
         first_name_str = str(v)
         if len(first_name_str) < 3 or len(first_name_str) > 15:
             raise ValueError('First name must be between 3 and 10 characters')
+        if any(char in r'!@#$%^&*(),.?":{}|<>' for char in v):
+            raise ValueError("First Name should not contain any special characters")
         return v
 
     @field_validator('last_name')
@@ -24,6 +26,8 @@ class UserBase(BaseModel):
         last_name_str = str(v)
         if len(last_name_str) < 3 or len(last_name_str) > 15:
             raise ValueError('Last name must be between 3 and 10 characters')
+        if any(char in r'!@#$%^&*(),.?":{}|<>' for char in v):
+            raise ValueError("Last Name should not contain any special characters")
         return v
 
     @field_validator('phone_number')
@@ -31,6 +35,8 @@ class UserBase(BaseModel):
         phone_str = str(v)
         if not (8 <= len(phone_str) <= 15):
             raise ValueError('Phone number must be between 8 and 15 digits')
+        if any(char in r'!@#$%^&*(),.?":{}|<>' for char in v):
+            raise ValueError("Phone Number should not contain any special characters")
         return v
 
     class Config:

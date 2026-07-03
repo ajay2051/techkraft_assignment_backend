@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from app.auth.routers import auth_router
+from app.candidates.routers import candidate_router
 from app.custom_exceptions import register_all_errors
 from app.db_connection import startup, shutdown
 from config import MODE
@@ -63,6 +64,7 @@ def welcome_to_candidate_evaluation():
 register_all_errors(app)  # Register All Errors from custom_exception file in main file
 
 app.include_router(auth_router, prefix=f"/api/{version}/auth")
+app.include_router(candidate_router, prefix=f"/api/{version}/candidate")
 
 # Run Project At Specified Port
 if __name__ == "__main__":

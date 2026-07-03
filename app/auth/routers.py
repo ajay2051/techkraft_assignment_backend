@@ -11,7 +11,7 @@ from app.custom_exceptions import UserAlreadyExists, UserNotFound, UserNotVerifi
 from app.db_connection import get_db
 from app.enums import UserRole
 
-auth_router = APIRouter(tags=["auth"])
+auth_router = APIRouter(tags=["Auth"])
 
 
 @auth_router.post("/create_reviewer_user/", response_model=schemas.CreateUserResponseMessage)
@@ -82,8 +82,6 @@ async def login_for_access_token(form_data: LoginData, db: Session = Depends(get
     email_user = get_user_by_email(db, form_data.email)
     if not email_user:
         raise UserNotFound
-    if not email_user.is_verified:
-        raise UserNotVerified
     user = jwt_token.authenticate_user(db, form_data.email, form_data.password)
     if not user:
         raise IncorrectEmailPassword
