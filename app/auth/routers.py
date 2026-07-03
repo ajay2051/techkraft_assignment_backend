@@ -22,8 +22,8 @@ async def create_users(user: schemas.UserCreate, db: Session = Depends(get_db)):
     user_by_number = get_user_by_number(db, user.phone_number)
     if user_by_number:
         raise UserAlreadyExists
-    user.role = UserRole.REVIEWER.value
-    new_user = create_user(db, user)
+    role = UserRole.REVIEWER.value
+    new_user = create_user(db, role, user)
     return CreateUserResponseMessage(user=new_user)
 
 
@@ -35,8 +35,8 @@ async def create_users(user: schemas.UserCreate, db: Session = Depends(get_db)):
     user_by_number = get_user_by_number(db, user.phone_number)
     if user_by_number:
         raise UserAlreadyExists
-    user.role = UserRole.ADMIN.value
-    new_user = create_user(db, user)
+    role = UserRole.ADMIN.value
+    new_user = create_user(db, role, user)
     return CreateUserResponseMessage(user=new_user)
 
 

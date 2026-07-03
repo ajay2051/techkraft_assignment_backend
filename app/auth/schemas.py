@@ -8,7 +8,7 @@ class UserBase(BaseModel):
     first_name: str
     last_name: str
     email: str
-    role: str
+    # role: str
     phone_number: int
     address: constr(max_length=100)
 
@@ -56,7 +56,7 @@ class UserCreate(UserBase):
 
 class UserResponse(UserBase):
     id: int
-    is_verified: bool
+    role: str
     created_at: datetime
     updated_at: datetime
 

@@ -18,7 +18,7 @@ def get_user_by_number(db: Session, phone_number: int):
     return db.query(models.User).filter(models.User.phone_number == phone_number).first()
 
 
-def create_user(db: Session, user: schemas.UserCreate):
+def create_user(db: Session, role: str, user: schemas.UserCreate):
     hashed_password = jwt_token.get_password_hash(user.password)
     # db_user = User(**user.model_dump())
     db_user = models.User(
@@ -28,7 +28,7 @@ def create_user(db: Session, user: schemas.UserCreate):
         password=hashed_password,
         phone_number=user.phone_number,
         address=user.address,
-        role=user.role,
+        role=role,
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow())
     db.add(db_user)
