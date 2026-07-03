@@ -7,7 +7,7 @@ from app.auth import schemas, jwt_token
 from app.auth.get_create_user import get_user_by_email, get_user_by_number, create_user
 from app.auth.jwt_token import blacklist_token
 from app.auth.schemas import CreateUserResponseMessage, LoginData
-from app.custom_exceptions import UserAlreadyExists, UserNotFound, UserNotVerified, IncorrectEmailPassword
+from app.custom_exceptions import UserAlreadyExists, UserNotFound, IncorrectEmailPassword
 from app.db_connection import get_db
 from app.enums import UserRole
 

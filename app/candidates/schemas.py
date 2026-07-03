@@ -3,6 +3,8 @@ from typing import Optional, List
 
 from pydantic import BaseModel, field_validator
 
+from app.scores.schemas import ScoreResponse
+
 
 class PaginationResult(BaseModel):
     count: int
@@ -33,6 +35,7 @@ class CandidateCreate(BaseModel):
 class CandidateResponse(CandidateCreate):
     id: int
     status: str
+    scores: List[ScoreResponse] = []
     internal_notes: Optional[str]
     created_at: datetime
     updated_at: datetime

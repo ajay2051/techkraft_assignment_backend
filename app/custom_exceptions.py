@@ -38,7 +38,14 @@ class UserAlreadyExists(BaseError):
 
 class CandidateAlreadyExists(BaseError):
     """
-    Error raised when user already exists
+    Error raised when candidate already exists
+    """
+    pass
+
+
+class CandidateDoesNotExists(BaseError):
+    """
+    Error raised when candidate does not exist
     """
     pass
 
@@ -168,6 +175,14 @@ def register_all_errors(app: FastAPI):
         message={
             "message": "Candidate with this email already exists...⛔👿",
             "error-code": "candidate-already-exists",
+        }
+    ))
+
+    app.add_exception_handler(CandidateDoesNotExists, create_exception_handler(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        message={
+            "message": "Candidate does not exist...⛔👿",
+            "error-code": "candidate-does-not-exist",
         }
     ))
 

@@ -7,9 +7,9 @@ from starlette.requests import Request
 
 from app.auth.jwt_token import get_current_user
 from app.candidates import schemas
-from app.candidates.get_create_candidates import get_candidates_by_email, create_candidate
+from app.candidates.get_create_candidates import get_candidates_by_email, create_candidate, get_candidates_by_id
 from app.candidates.schemas import CreateCandidateResponseMessage, CandidateResponse
-from app.custom_exceptions import CandidateAlreadyExists
+from app.custom_exceptions import CandidateAlreadyExists, CandidateDoesNotExists
 from app.db_connection import get_db
 from app.models import Candidates
 from app.pagination import paginate
@@ -53,3 +53,11 @@ async def get_candidates(
     paginated_query = query.offset((page - 1) * per_page).limit(per_page)
     data = await paginate(model=Candidates, db=db, query=paginated_query, page=page, per_page=per_page, request=request, response_model_schema=CandidateResponse, objects=total_objects)
     return {"message": "Candidates listed successfully...👍🔥", "data": data}
+
+
+@candidate_router.get("/{id}/")
+async def get_candidate(id: int, db: Session = Depends(get_db), current_user: int = Depends(get_current_user)):
+    candidate = get_candidates_by_id(db=db, candidate_id=id)
+    if not candidate:
+        raise CandidateDoesNotExists
+    return {"message": "Candidate details successfully...", "data": candidate}

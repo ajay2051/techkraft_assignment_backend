@@ -1,13 +1,14 @@
 from datetime import datetime
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app import models
 from app.candidates import schemas
+from app.models import Candidates
 
 
 def get_candidates_by_id(db: Session, candidate_id: int):
-    return db.query(models.Candidates).filter(models.Candidates.id == candidate_id).first()
+    return db.query(Candidates).options(joinedload(Candidates.scores)).filter(Candidates.id == candidate_id).first()
 
 
 def get_candidates_by_email(db: Session, email: str):
