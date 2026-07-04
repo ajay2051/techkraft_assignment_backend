@@ -5,6 +5,7 @@ from fastapi.params import Query
 from sqlalchemy.orm import Session
 from starlette.requests import Request
 
+from app.auth.dependencies import AllowedUsers
 from app.auth.jwt_token import get_current_user
 from app.candidates import schemas
 from app.candidates.get_create_candidates import get_candidates_by_email, create_candidate, get_candidates_by_id
@@ -61,3 +62,16 @@ async def get_candidate(id: int, db: Session = Depends(get_db), current_user: in
     if not candidate:
         raise CandidateDoesNotExists
     return {"message": "Candidate details successfully...", "data": candidate}
+
+
+@candidate_router.patch("/{id}/")
+async def update_candidate_internal_notes(id: int, candidates: schemas.CandidateInternalNotes, db: Session = Depends(get_db), current_user: int = Depends(get_current_user),
+                                          _: bool = Depends(AllowedUsers(["admin"]))):
+    candidate = get_candidates_by_id(db=db, candidate_id=id)
+    if not candidate:
+        raise CandidateDoesNotExists
+    for field, value in candidates.dict().items():
+        setattr(candidate, field, value)
+    db.commit()
+    db.refresh(candidate)
+    return {"message": "Candidate details updated successfully...", "data": candidate}

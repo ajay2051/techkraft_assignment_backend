@@ -32,6 +32,17 @@ class CandidateCreate(BaseModel):
         return v
 
 
+class CandidateInternalNotes(BaseModel):
+    internal_notes: Optional[str]
+
+    @field_validator('internal_notes')
+    def validate_internal_notes(cls, v):
+        internal_notes_str = str(v)
+        if len(internal_notes_str) < 3 or len(internal_notes_str) > 500:
+            raise ValueError('Internal Notes must be between 3 and 500 characters')
+        return v
+
+
 class CandidateResponse(CandidateCreate):
     id: int
     status: str
