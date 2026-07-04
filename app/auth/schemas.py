@@ -30,13 +30,14 @@ class UserBase(BaseModel):
             raise ValueError("Last Name should not contain any special characters")
         return v
 
-    @field_validator('phone_number')
+    @field_validator("phone_number")
+    @classmethod
     def validate_phone_number(cls, v):
         phone_str = str(v)
         if not (8 <= len(phone_str) <= 15):
-            raise ValueError('Phone number must be between 8 and 15 digits')
-        if any(char in r'!@#$%^&*(),.?":{}|<>' for char in v):
-            raise ValueError("Phone Number should not contain any special characters")
+            raise ValueError("Phone number must be between 8 and 15 digits")
+        if any(char in r'!@#$%^&*(),.?":{}|<>' for char in phone_str):
+            raise ValueError("Phone number should not contain special characters")
         return v
 
     class Config:
