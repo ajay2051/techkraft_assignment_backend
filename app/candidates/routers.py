@@ -12,6 +12,7 @@ from app.candidates.get_create_candidates import get_candidates_by_email, create
 from app.candidates.schemas import CreateCandidateResponseMessage, CandidateResponse
 from app.custom_exceptions import CandidateAlreadyExists, CandidateDoesNotExists
 from app.db_connection import get_db
+from app.enums import CandidateStatus
 from app.models import Candidates
 from app.pagination import paginate
 
@@ -39,7 +40,7 @@ async def get_candidates(
         db: Session = Depends(get_db),
         current_user: int = Depends(get_current_user)
 ):
-    query = db.query(Candidates)
+    query = db.query(Candidates).filter(Candidates.status != CandidateStatus.ARCHIVED.value)
 
     if status:
         query = query.filter(Candidates.status == status)
@@ -75,3 +76,24 @@ async def update_candidate_internal_notes(id: int, candidates: schemas.Candidate
     db.commit()
     db.refresh(candidate)
     return {"message": "Candidate details updated successfully...", "data": candidate}
+
+
+@candidate_router.delete("/{id}/")
+async def soft_delete_candidate(id: int, db: Session = Depends(get_db), current_user: int = Depends(get_current_user),
+                                _: bool = Depends(AllowedUsers(["admin"]))
+                                ):
+    candidate = get_candidates_by_id(db=db, candidate_id=id)
+
+    if not candidate:
+        raise CandidateDoesNotExists
+
+    # Already archived
+    if candidate.status == CandidateStatus.ARCHIVED.value:
+        return {"message": "Candidate is already archived.", "data": candidate}
+
+    candidate.status = CandidateStatus.ARCHIVED.value
+
+    db.commit()
+    db.refresh(candidate)
+
+    return {"message": "Candidate archived successfully.", "data": candidate}
