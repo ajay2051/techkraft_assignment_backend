@@ -50,6 +50,13 @@ class CandidateDoesNotExists(BaseError):
     pass
 
 
+class ScoreDoesNotExists(BaseError):
+    """
+    Error raised when score does not exist
+    """
+    pass
+
+
 class IncorrectEmailPassword(BaseError):
     """
     Error raised when email is incorrect
@@ -186,6 +193,14 @@ def register_all_errors(app: FastAPI):
         }
     ))
 
+    app.add_exception_handler(ScoreDoesNotExists, create_exception_handler(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        message={
+            "message": "Score does not exist...⛔👿",
+            "error-code": "score-does-not-exist",
+        }
+    ))
+
     app.add_exception_handler(UserNotFound, create_exception_handler(
         status_code=status.HTTP_404_NOT_FOUND,
         message={
@@ -237,7 +252,7 @@ def register_all_errors(app: FastAPI):
     app.add_exception_handler(NotAuthorized, create_exception_handler(
         status_code=status.HTTP_401_UNAUTHORIZED,
         message={
-            "message": "Not Allowed/Authorized. Only Admins are Allowed...⛔👿",
+            "message": "Not Allowed/Authorized....⛔👿",
             "error-code": "not-allowed",
         }
     ))

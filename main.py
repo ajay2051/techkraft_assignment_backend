@@ -9,6 +9,7 @@ from app.auth.routers import auth_router
 from app.candidates.routers import candidate_router
 from app.custom_exceptions import register_all_errors
 from app.db_connection import startup, shutdown
+from app.scores.routers import score_router
 from config import MODE
 
 version = "v1"
@@ -65,6 +66,7 @@ register_all_errors(app)  # Register All Errors from custom_exception file in ma
 
 app.include_router(auth_router, prefix=f"/api/{version}/auth")
 app.include_router(candidate_router, prefix=f"/api/{version}/candidate")
+app.include_router(score_router, prefix=f"/api/{version}")
 
 # Run Project At Specified Port
 if __name__ == "__main__":

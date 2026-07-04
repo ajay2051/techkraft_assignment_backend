@@ -8,6 +8,10 @@ from app.models import Candidates
 
 
 def get_candidates_by_id(db: Session, candidate_id: int):
+    return db.query(Candidates).filter(Candidates.id == candidate_id).first()
+
+
+def get_candidates_with_scores(db: Session, candidate_id: int):
     return db.query(Candidates).options(joinedload(Candidates.scores)).filter(Candidates.id == candidate_id).first()
 
 

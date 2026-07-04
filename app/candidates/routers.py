@@ -8,7 +8,7 @@ from starlette.requests import Request
 from app.auth.dependencies import AllowedUsers
 from app.auth.jwt_token import get_current_user
 from app.candidates import schemas
-from app.candidates.get_create_candidates import get_candidates_by_email, create_candidate, get_candidates_by_id
+from app.candidates.get_create_candidates import get_candidates_by_email, create_candidate, get_candidates_by_id, get_candidates_with_scores
 from app.candidates.schemas import CreateCandidateResponseMessage, CandidateResponse
 from app.custom_exceptions import CandidateAlreadyExists, CandidateDoesNotExists
 from app.db_connection import get_db
@@ -58,7 +58,7 @@ async def get_candidates(
 
 @candidate_router.get("/{id}/")
 async def get_candidate(id: int, db: Session = Depends(get_db), current_user: int = Depends(get_current_user)):
-    candidate = get_candidates_by_id(db=db, candidate_id=id)
+    candidate = get_candidates_with_scores(db=db, candidate_id=id)
     if not candidate:
         raise CandidateDoesNotExists
     return {"message": "Candidate details successfully...", "data": candidate}
