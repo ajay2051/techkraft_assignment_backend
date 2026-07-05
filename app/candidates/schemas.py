@@ -43,6 +43,10 @@ class CandidateInternalNotes(BaseModel):
         return v
 
 
+class CandidateStatus(BaseModel):
+    status: str
+
+
 class CandidateResponse(CandidateCreate):
     id: int
     status: str

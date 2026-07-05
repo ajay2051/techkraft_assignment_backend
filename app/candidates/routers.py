@@ -78,6 +78,19 @@ async def update_candidate_internal_notes(id: int, candidates: schemas.Candidate
     return {"message": "Candidate details updated successfully...", "data": candidate}
 
 
+@candidate_router.patch("/{id}/status/")
+async def update_candidate_status(id: int, candidates: CandidateStatus, db: Session = Depends(get_db), current_user: int = Depends(get_current_user),
+                                  _: bool = Depends(AllowedUsers(["admin"]))):
+    candidate = get_candidates_by_id(db=db, candidate_id=id)
+    if not candidate:
+        raise CandidateDoesNotExists
+    for field, value in candidates.dict().items():
+        setattr(candidate, field, value)
+    db.commit()
+    db.refresh(candidate)
+    return {"message": "Candidate status updated successfully...", "data": candidate}
+
+
 @candidate_router.delete("/{id}/")
 async def soft_delete_candidate(id: int, db: Session = Depends(get_db), current_user: int = Depends(get_current_user),
                                 _: bool = Depends(AllowedUsers(["admin"]))
