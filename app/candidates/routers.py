@@ -13,7 +13,7 @@ from app.candidates.schemas import CreateCandidateResponseMessage, CandidateResp
 from app.custom_exceptions import CandidateAlreadyExists, CandidateDoesNotExists
 from app.db_connection import get_db
 from app.enums import CandidateStatus
-from app.models import Candidates
+from app.models import Candidates, Scores
 from app.pagination import paginate
 
 candidate_router = APIRouter(tags=["Candidate"])
@@ -41,6 +41,9 @@ async def get_candidates(
         current_user: int = Depends(get_current_user)
 ):
     query = db.query(Candidates).filter(Candidates.status != CandidateStatus.ARCHIVED.value)
+
+    if current_user.role == "reviewer":
+        query = (query.join(Scores).filter(Scores.reviewer_id == current_user.id,).distinct())
 
     if status:
         query = query.filter(Candidates.status == status)
