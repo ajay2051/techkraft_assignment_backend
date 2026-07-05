@@ -1,3 +1,4 @@
+import httpx
 from fastapi import APIRouter, Depends
 from sqlalchemy import cast, String
 from sqlalchemy.dialects.postgresql import ARRAY as PG_ARRAY
@@ -66,6 +67,52 @@ async def get_candidate(id: int, db: Session = Depends(get_db), current_user: in
     if not candidate:
         raise CandidateDoesNotExists
     return {"message": "Candidate details successfully...", "data": candidate}
+
+
+@candidate_router.get("/{id}/summary")
+async def summarize_candidate(id: int, db: Session = Depends(get_db), current_user: int = Depends(get_current_user),):
+
+    candidate = get_candidates_with_scores(db=db, candidate_id=id)
+
+    if not candidate:
+        raise CandidateDoesNotExists
+
+    # Prepare prompt for the LLM
+    prompt = f"""
+    Summarize the following candidate for a recruiter.
+
+    Name: {candidate['name']}
+    Role Applied: {candidate['role_applied']}
+    Skills: {', '.join(candidate['skills'])}
+    Status: {candidate['status']}
+    Internal Notes: {candidate['internal_notes']}
+    Reviews: {candidate['scores']}
+
+    Return a concise professional summary and recommendation.
+    """
+
+
+    async with httpx.AsyncClient(timeout=30) as client:
+        response = await client.post(
+            "http://localhost:8001/mock-llm",
+            json={
+                "model": "gpt-4.1-mini",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": "You are an expert HR recruiter."
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ]
+            }
+        )
+
+    response.raise_for_status()
+    llm_response = response.json()
+    return {"message": "Candidate summary generated successfully.", "candidate": candidate, "summary": llm_response["summary"],}
 
 
 @candidate_router.patch("/{id}/")
