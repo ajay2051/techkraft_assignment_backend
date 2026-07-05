@@ -58,6 +58,9 @@ async def get_candidates(
     total_objects = query.count()
     paginated_query = query.offset((page - 1) * per_page).limit(per_page)
     data = await paginate(model=Candidates, db=db, query=paginated_query, page=page, per_page=per_page, request=request, response_model_schema=CandidateResponse, objects=total_objects)
+    if current_user.role == "reviewer":
+        for item in data.items:
+            item["scores"] = [s for s in item["scores"] if s["reviewer_id"] == current_user.id]
     return {"message": "Candidates listed successfully...👍🔥", "data": data}
 
 
