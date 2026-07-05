@@ -9,7 +9,7 @@ from app.auth.dependencies import AllowedUsers
 from app.auth.jwt_token import get_current_user
 from app.candidates import schemas
 from app.candidates.get_create_candidates import get_candidates_by_email, create_candidate, get_candidates_by_id, get_candidates_with_scores
-from app.candidates.schemas import CreateCandidateResponseMessage, CandidateResponse
+from app.candidates.schemas import CreateCandidateResponseMessage, CandidateResponse, CandidateStatuss
 from app.custom_exceptions import CandidateAlreadyExists, CandidateDoesNotExists
 from app.db_connection import get_db
 from app.enums import CandidateStatus
@@ -79,7 +79,7 @@ async def update_candidate_internal_notes(id: int, candidates: schemas.Candidate
 
 
 @candidate_router.patch("/{id}/status/")
-async def update_candidate_status(id: int, candidates: CandidateStatus, db: Session = Depends(get_db), current_user: int = Depends(get_current_user),
+async def update_candidate_status(id: int, candidates: CandidateStatuss, db: Session = Depends(get_db), current_user: int = Depends(get_current_user),
                                   _: bool = Depends(AllowedUsers(["admin"]))):
     candidate = get_candidates_by_id(db=db, candidate_id=id)
     if not candidate:

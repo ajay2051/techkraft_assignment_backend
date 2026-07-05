@@ -43,7 +43,7 @@ class CandidateInternalNotes(BaseModel):
         return v
 
 
-class CandidateStatus(BaseModel):
+class CandidateStatuss(BaseModel):
     status: str
 
 
